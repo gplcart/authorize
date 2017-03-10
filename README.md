@@ -6,6 +6,6 @@ Dependencies: [Omnipay Library](https://github.com/gplcart/omnipay_library)
 
 Installation:
 
-1. Download and extract to `system/modules`
+1. Download and extract to `system/modules` manually or using composer `composer require gplcart/authorize`. IMPORTANT: If you downloaded the module manually, be sure that the name of extracted module folder doesn't contain a branch/version suffix, e.g `-master`. Rename if needed.
 2. Go to `admin/module/list` end enable the module
 3. Adjust settings at `admin/module/settings/authorize`

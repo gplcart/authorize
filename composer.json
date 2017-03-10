@@ -1,8 +1,9 @@
 {
     "name": "gplcart/authorize",
-    "type": "project",
+    "type": "gplcart-module",
     "description": "Authorize.Net payment gateway for GPL Cart",
-    "keywords": ["gplcart", "gplcart module", "gplcart payment module", "omnipay", "ecommerce", "shopping cart", "opensource shopping cart", "Authorize.Net"],
+    "keywords": ["gplcart", "ecommerce", "shopping cart", "gplcart-module", "omnipay", "gplcart-payment-module"],
+    "homepage": "https://github.com/gplcart/authorize",
     "license": "GPL-3.0",
     "authors": [
         {
@@ -15,13 +16,7 @@
         "issues": "https://github.com/gplcart/authorize/issues"
     },
     "require": {
-        "gplcart/gplcart": "1.0.*",
-        "gplcart/omnipay_library": "1.0.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "gplcart\\core\\": "system/core/"
-        }
+        "gplcart/composer-module-installer": "*"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
