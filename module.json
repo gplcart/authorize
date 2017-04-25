@@ -1,0 +1,21 @@
+{
+    "core": "1.x",
+    "name": "Authorize.Net",
+    "version": "1.0.0-dev",
+    "description": "Provides Authorize.Net SIM payment method",
+    "author": "Iurii Makukh <gplcart.software@gmail.com>",
+    "license": "GNU General Public License 3.0",
+    "dependencies": {
+        "omnipay_library": ">= 1.0"
+    },
+    "configure": "admin/module/settings/authorize",
+    "settings": {
+        "status": true,
+        "order_status_success": "processing",
+        "testMode": true,
+        "developerMode": false,
+        "hashSecret": "",
+        "apiLoginId": "",
+        "transactionKey": ""
+    }
+}
