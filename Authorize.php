@@ -9,16 +9,13 @@
 
 namespace gplcart\modules\authorize;
 
-use gplcart\core\Config;
-use gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Transaction as TransactionModel;
-use gplcart\modules\omnipay_library\OmnipayLibrary as OmnipayLibraryModule;
+use gplcart\core\Module;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Main class for Authorize.Net module
  */
-class Authorize
+class Authorize extends Module
 {
 
     /**
@@ -40,22 +37,10 @@ class Authorize
     protected $controller;
 
     /**
-     * Gateway Omnipay instance
-     * @var \Omnipay\AuthorizeNet\SIMGateway $gateway
-     */
-    protected $gateway;
-
-    /**
      * Order model instance
      * @var \gplcart\core\models\Order $order
      */
     protected $order;
-
-    /**
-     * Transaction model instance
-     * @var \gplcart\core\models\Transaction $transaction
-     */
-    protected $transaction;
 
     /**
      * Language model instance
@@ -64,73 +49,13 @@ class Authorize
     protected $language;
 
     /**
-     * Config class instance
-     * @var \gplcart\core\Config $config
-     */
-    protected $config;
-
-    /**
-     * Omnipay library module instance
-     * @var \gplcart\modules\omnipay_library\OmnipayLibrary
-     */
-    protected $omnipay_library_module;
-
-    /**
-     * Constructor
-     * @param Config $config
      * @param LanguageModel $language
-     * @param OrderModel $order
-     * @param TransactionModel $transaction
-     * @param OmnipayLibraryModule $omnipay_library_module
      */
-    public function __construct(Config $config, LanguageModel $language,
-            OrderModel $order, TransactionModel $transaction,
-            OmnipayLibraryModule $omnipay_library_module)
+    public function __construct(LanguageModel $language)
     {
-        $this->order = $order;
-        $this->config = $config;
+        parent::__construct();
+
         $this->language = $language;
-        $this->transaction = $transaction;
-
-        $this->omnipay_library_module = $omnipay_library_module;
-        $this->gateway = $this->omnipay_library_module->getGatewayInstance('AuthorizeNet_SIM');
-    }
-
-    /**
-     * Module info
-     * @return array
-     */
-    public function info()
-    {
-        return array(
-            'core' => '1.x',
-            'name' => 'Authorize.Net',
-            'version' => '1.0.0-alfa.1',
-            'description' => 'Provides Authorize.Net SIM payment method',
-            'author' => 'Iurii Makukh <gplcart.software@gmail.com>',
-            'license' => 'GNU General Public License 3.0',
-            'dependencies' => array('omnipay_library' => '>= 1.0'),
-            'configure' => 'admin/module/settings/authorize',
-            'settings' => $this->getDefaultSettings()
-        );
-    }
-
-    /**
-     * Returns an array of default module settings
-     * @return array
-     */
-    protected function getDefaultSettings()
-    {
-        return array(
-            'status' => true,
-            'order_status_success' => $this->order->getStatusProcessing(),
-            // Gateway specific params
-            'testMode' => true,
-            'developerMode' => false,
-            'hashSecret' => '',
-            'apiLoginId' => '',
-            'transactionKey' => ''
-        );
     }
 
     /**
@@ -154,7 +79,11 @@ class Authorize
      */
     public function hookModuleEnableBefore(&$result)
     {
-        $this->validateGateway($result);
+        try {
+            $this->getGatewayInstance();
+        } catch (\InvalidArgumentException $ex) {
+            $result = $ex->getMessage();
+        }
     }
 
     /**
@@ -163,18 +92,28 @@ class Authorize
      */
     public function hookModuleInstallBefore(&$result)
     {
-        $this->validateGateway($result);
+        try {
+            $this->getGatewayInstance();
+        } catch (\InvalidArgumentException $ex) {
+            $result = $ex->getMessage();
+        }
     }
 
     /**
-     * Checks the gateway object is loaded
-     * @param mixed $result
+     * Get gateway instance
+     * @return object
+     * @throws \InvalidArgumentException
      */
-    protected function validateGateway(&$result)
+    protected function getGatewayInstance()
     {
-        if (!is_object($this->gateway)) {
-            $result = $this->language->text('Unable to load @name gateway', array('@name' => 'Authorize.Net'));
+        /* @var $object \gplcart\modules\omnipay_library\OmnipayLibrary */
+        $object = $this->getInstance('gplcart\\modules\\omnipay_library\\OmnipayLibrary');
+
+        if (!$object instanceof \Omnipay\AuthorizeNet\SIMGateway) {
+            throw new \InvalidArgumentException('Object is not instance of Omnipay\AuthorizeNet\SIMGateway');
         }
+
+        return $object->getGatewayInstance('AuthorizeNet_SIM');
     }
 
     /**
@@ -218,13 +157,14 @@ class Authorize
     /**
      * Implements hook "order.add.before"
      * @param array $order
+     * @param \gplcart\core\models\Order $model
      */
-    public function hookOrderAddBefore(array &$order)
+    public function hookOrderAddBefore(array &$order, $model)
     {
         // Adjust order status before creation
         // We want to get payment in advance, so assign "awaiting payment" status
         if ($order['payment'] === 'authorize_sim') {
-            $order['status'] = $this->order->getStatusAwaitingPayment();
+            $order['status'] = $model->getStatusAwaitingPayment();
         }
     }
 
@@ -244,14 +184,15 @@ class Authorize
      * Implements hook "order.complete.page"
      * @param array $order
      * @param \gplcart\core\controllers\frontend\Controller $controller
-     * @return null
+     * @param \gplcart\core\models\Order $model
      */
-    public function hookOrderCompletePage(array $order, $controller)
+    public function hookOrderCompletePage(array $order, $controller, $model)
     {
         if ($order['payment'] !== 'authorize_sim') {
             return null;
         }
 
+        $this->order = $model;
         $this->data_order = $order;
         $this->controller = $controller;
 
@@ -264,7 +205,8 @@ class Authorize
             return null;
         }
 
-        $this->response = $this->gateway->completePurchase($this->getPurchaseParams())->send();
+        $gateway = $this->getGatewayInstance();
+        $this->response = $gateway->completePurchase($this->getPurchaseParams())->send();
 
         if ($this->controller->isQuery('cancel')) {
             $this->cancelPurchase();
@@ -294,13 +236,15 @@ class Authorize
      */
     protected function submit()
     {
-        $this->gateway->setApiLoginId($this->setting('apiLoginId'));
-        $this->gateway->setHashSecret($this->setting('hashSecret'));
-        $this->gateway->setTestMode((bool) $this->setting('testMode'));
-        $this->gateway->setDeveloperMode((bool) $this->setting('testMode'));
-        $this->gateway->setTransactionKey($this->setting('transactionKey'));
+        $gateway = $this->getGatewayInstance();
 
-        $this->response = $this->gateway->purchase($this->getPurchaseParams())->send();
+        $gateway->setApiLoginId($this->setting('apiLoginId'));
+        $gateway->setHashSecret($this->setting('hashSecret'));
+        $gateway->setTestMode((bool) $this->setting('testMode'));
+        $gateway->setDeveloperMode((bool) $this->setting('testMode'));
+        $gateway->setTransactionKey($this->setting('transactionKey'));
+
+        $this->response = $gateway->purchase($this->getPurchaseParams())->send();
 
         if ($this->response->isRedirect()) {
             $this->response->redirect();
@@ -366,11 +310,8 @@ class Authorize
      */
     protected function updateOrderStatus()
     {
-        $data = array(
-            'status' => $this->setting('order_status_success'));
+        $data = array('status' => $this->setting('order_status_success'));
         $this->order->update($this->data_order['order_id'], $data);
-
-        // Load fresh data
         $this->data_order = $this->order->get($this->data_order['order_id']);
     }
 
@@ -387,7 +328,9 @@ class Authorize
             'gateway_transaction_id' => $this->response->getTransactionReference()
         );
 
-        $this->transaction->add($transaction);
+        /* @var $object \gplcart\core\models\Transaction */
+        $object = $this->getInstance('gplcart\\core\\models\\Transaction');
+        return $object->add($transaction);
     }
 
 }
