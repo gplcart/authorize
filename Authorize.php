@@ -183,10 +183,10 @@ class Authorize extends Module
     /**
      * Implements hook "order.complete.page"
      * @param array $order
-     * @param \gplcart\core\controllers\frontend\Controller $controller
      * @param \gplcart\core\models\Order $model
+     * @param \gplcart\core\controllers\frontend\Controller $controller
      */
-    public function hookOrderCompletePage(array $order, $controller, $model)
+    public function hookOrderCompletePage(array $order, $model, $controller)
     {
         if ($order['payment'] !== 'authorize_sim') {
             return null;
