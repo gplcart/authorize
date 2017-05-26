@@ -51,7 +51,7 @@
         <div class="col-md-4">
           <select name="settings[order_status_success]" class="form-control">
             <?php foreach ($statuses as $status_id => $status_name) { ?>
-            <option value="<?php echo $this->escape($status_id); ?>"<?php echo isset($settings['order_status_success']) && $settings['order_status_success'] == $status_id ? ' selected' : ''; ?>><?php echo $this->escape($status_name); ?></option>
+            <option value="<?php echo $this->e($status_id); ?>"<?php echo isset($settings['order_status_success']) && $settings['order_status_success'] == $status_id ? ' selected' : ''; ?>><?php echo $this->e($status_name); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
@@ -62,7 +62,7 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('API login ID'); ?></label>
         <div class="col-md-4">
-          <input name="settings[apiLoginId]" class="form-control" value="<?php echo isset($settings['apiLoginId']) ? $this->escape($settings['apiLoginId']) : ''; ?>">
+          <input name="settings[apiLoginId]" class="form-control" value="<?php echo isset($settings['apiLoginId']) ? $this->e($settings['apiLoginId']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->text('The API Login ID is at least eight characters in length and intended to authenticate you in Authorize.net'); ?>
           </div>
@@ -71,7 +71,7 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Transaction ID'); ?></label>
         <div class="col-md-4">
-          <input name="settings[transactionKey]" class="form-control" value="<?php echo isset($settings['transactionKey']) ? $this->escape($settings['transactionKey']) : ''; ?>">
+          <input name="settings[transactionKey]" class="form-control" value="<?php echo isset($settings['transactionKey']) ? $this->e($settings['transactionKey']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->text('Transaction key contains 16 alphanumeric characters and intended to authenticate you in Authorize.net'); ?>
           </div>
@@ -80,7 +80,7 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Hash secret'); ?></label>
         <div class="col-md-4">
-          <input name="settings[hashSecret]" class="form-control" value="<?php echo isset($settings['hashSecret']) ? $this->escape($settings['hashSecret']) : ''; ?>">
+          <input name="settings[hashSecret]" class="form-control" value="<?php echo isset($settings['hashSecret']) ? $this->e($settings['hashSecret']) : ''; ?>">
           <div class="help-block">
               <?php echo $this->text('The MD5 Hash secret allows the module to verify that the results of a transaction are actually from Authorize.Net'); ?>
           </div>
