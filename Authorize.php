@@ -64,7 +64,6 @@ class Authorize extends Module
      */
     public function hookRouteList(array &$routes)
     {
-        // Module settings page
         $routes['admin/module/settings/authorize'] = array(
             'access' => 'module_edit',
             'handlers' => array(
@@ -106,14 +105,16 @@ class Authorize extends Module
      */
     protected function getGatewayInstance()
     {
-        /* @var $object \gplcart\modules\omnipay_library\OmnipayLibrary */
-        $object = $this->getInstance('gplcart\\modules\\omnipay_library\\OmnipayLibrary');
+        /* @var $module \gplcart\modules\omnipay_library\OmnipayLibrary */
+        $module = $this->getInstance('gplcart\\modules\\omnipay_library\\OmnipayLibrary');
 
-        if (!$object instanceof \Omnipay\AuthorizeNet\SIMGateway) {
+        $instance = $module->getGatewayInstance('AuthorizeNet_SIM');
+
+        if (!$instance instanceof \Omnipay\AuthorizeNet\SIMGateway) {
             throw new \InvalidArgumentException('Object is not instance of Omnipay\AuthorizeNet\SIMGateway');
         }
 
-        return $object->getGatewayInstance('AuthorizeNet_SIM');
+        return $instance;
     }
 
     /**
