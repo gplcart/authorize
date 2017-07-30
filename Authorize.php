@@ -10,7 +10,6 @@
 namespace gplcart\modules\authorize;
 
 use gplcart\core\Module;
-use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Main class for Authorize.Net module
@@ -43,19 +42,11 @@ class Authorize extends Module
     protected $order;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Constructor
      */
-    protected $language;
-
-    /**
-     * @param LanguageModel $language
-     */
-    public function __construct(LanguageModel $language)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->language = $language;
     }
 
     /**
@@ -106,8 +97,7 @@ class Authorize extends Module
     protected function getGatewayInstance()
     {
         /* @var $module \gplcart\modules\omnipay_library\OmnipayLibrary */
-        $module = $this->getInstance('gplcart\\modules\\omnipay_library\\OmnipayLibrary');
-
+        $module = $this->getInstance('omnipay_library');
         $instance = $module->getGatewayInstance('AuthorizeNet_SIM');
 
         if (!$instance instanceof \Omnipay\AuthorizeNet\SIMGateway) {
@@ -127,7 +117,7 @@ class Authorize extends Module
             'module' => 'authorize',
             'image' => 'image/icon.png',
             'status' => $this->getStatus(),
-            'title' => $this->language->text('Authorize.Net'),
+            'title' => 'Authorize.Net',
             'template' => array('complete' => 'pay')
         );
     }
@@ -330,7 +320,7 @@ class Authorize extends Module
         );
 
         /* @var $object \gplcart\core\models\Transaction */
-        $object = $this->getInstance('gplcart\\core\\models\\Transaction');
+        $object = $this->getModel('Transaction');
         return $object->add($transaction);
     }
 
