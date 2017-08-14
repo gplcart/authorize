@@ -113,11 +113,13 @@ class Authorize extends Module
      */
     public function hookPaymentMethods(array &$methods)
     {
+        $language = $this->getLanguage();
+
         $methods['authorize_sim'] = array(
             'module' => 'authorize',
             'image' => 'image/icon.png',
             'status' => $this->getStatus(),
-            'title' => 'Authorize.Net',
+            'title' => $language->text('Authorize.Net'),
             'template' => array('complete' => 'pay')
         );
     }
