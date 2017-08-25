@@ -40,7 +40,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Test mode is intended for testing purposes and should be disabled to send real payments'); ?>
+        <?php echo $this->text('Test mode is intended for testing purposes and should be disabled in production'); ?>
       </div>
     </div>
   </div>
@@ -53,7 +53,7 @@
         <?php } ?>
       </select>
       <div class="help-block">
-        <?php echo $this->text('The status will be assigned to an order after successful transaction'); ?>
+        <?php echo $this->text('The status will be assigned to an order after a successful transaction'); ?>
       </div>
     </div>
   </div>
