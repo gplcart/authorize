@@ -2,9 +2,9 @@
 
 /**
  * @package Authorize.Net
- * @author Iurii Makukh <gplcart.software@gmail.com> 
- * @copyright Copyright (c) 2017, Iurii Makukh <gplcart.software@gmail.com> 
- * @license https://www.gnu.org/licenses/gpl-3.0.en.html GNU General Public License 3.0 
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2017, Iurii Makukh <gplcart.software@gmail.com>
+ * @license https://www.gnu.org/licenses/gpl-3.0.en.html GNU General Public License 3.0
  */
 
 namespace gplcart\modules\authorize;
@@ -51,7 +51,7 @@ class Authorize extends Module
 
     /**
      * Implements hook "route.list"
-     * @param array $routes 
+     * @param array $routes
      */
     public function hookRouteList(array &$routes)
     {
@@ -109,7 +109,7 @@ class Authorize extends Module
 
     /**
      * Implements hook "payment.methods"
-     * @param array $methods 
+     * @param array $methods
      */
     public function hookPaymentMethods(array &$methods)
     {
@@ -181,32 +181,34 @@ class Authorize extends Module
      */
     public function hookOrderCompletePage(array $order, $model, $controller)
     {
-        if ($order['payment'] !== 'authorize_sim') {
-            return null;
+        if ($order['payment'] === 'authorize_sim') {
+
+            $this->order = $model;
+            $this->data_order = $order;
+            $this->controller = $controller;
+
+            $this->processPurchase();
         }
+    }
 
-        $this->order = $model;
-        $this->data_order = $order;
-        $this->controller = $controller;
-
+    /**
+     * Process payment
+     */
+    protected function processPurchase()
+    {
         if ($this->controller->isPosted('pay')) {
-            $this->submit();
-            return null;
+            $this->submitPurchase();
+        } else if ($this->controller->isQuery('authorize_return')) {
+
+            $gateway = $this->getGatewayInstance();
+            $this->response = $gateway->completePurchase($this->getPurchaseParams())->send();
+
+            if ($this->controller->isQuery('cancel')) {
+                $this->cancelPurchase();
+            } else {
+                $this->finishPurchase();
+            }
         }
-
-        if (!$this->controller->isQuery('authorize_return')) {
-            return null;
-        }
-
-        $gateway = $this->getGatewayInstance();
-        $this->response = $gateway->completePurchase($this->getPurchaseParams())->send();
-
-        if ($this->controller->isQuery('cancel')) {
-            $this->cancelPurchase();
-            return null;
-        }
-
-        $this->finishPurchase();
     }
 
     /**
@@ -227,7 +229,7 @@ class Authorize extends Module
     /**
      * Handles submitted payment
      */
-    protected function submit()
+    protected function submitPurchase()
     {
         $gateway = $this->getGatewayInstance();
 
