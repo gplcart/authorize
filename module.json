@@ -2,7 +2,7 @@
     "core": "1.x",
     "name": "Authorize.Net",
     "version": "1.0.0-dev",
-    "description": "Provides Authorize.Net SIM payment method",
+    "description": "Adds Authorize.Net SIM payment method. Based on Omnipay library",
     "author": "Iurii Makukh <gplcart.software@gmail.com>",
     "license": "GNU General Public License 3.0",
     "dependencies": {
