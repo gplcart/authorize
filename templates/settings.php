@@ -89,7 +89,7 @@
       <div class="btn-toolbar">
         <a href="<?php echo $this->url('admin/module/list'); ?>" class="btn btn-default"><?php echo $this->text('Cancel'); ?></a>
         <button class="btn btn-default save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <?php echo $this->text('Save'); ?>
         </button>
       </div>
     </div>
