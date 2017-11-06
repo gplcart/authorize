@@ -9,7 +9,8 @@
 
 namespace gplcart\modules\authorize;
 
-use gplcart\core\Module;
+use gplcart\core\Module,
+    gplcart\core\Config;
 
 /**
  * Main class for Authorize.Net module
@@ -42,11 +43,11 @@ class Authorize extends Module
     protected $order;
 
     /**
-     * Constructor
+     * @param Config $config
      */
-    public function __construct()
+    public function __construct(Config $config)
     {
-        parent::__construct();
+        parent::__construct($config);
     }
 
     /**
@@ -144,7 +145,7 @@ class Authorize extends Module
      */
     protected function setting($name, $default = null)
     {
-        return $this->config->module('authorize', $name, $default);
+        return $this->config->getFromModule('authorize', $name, $default);
     }
 
     /**
