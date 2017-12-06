@@ -9,8 +9,7 @@
 
 namespace gplcart\modules\authorize\controllers;
 
-use gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\Module as ModuleModel;
+use gplcart\core\models\Order as OrderModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -20,28 +19,19 @@ class Settings extends BackendController
 {
 
     /**
-     * Module model instance
-     * @var \gplcart\core\models\Module $module
-     */
-    protected $module;
-
-    /**
      * Order model instance
      * @var \gplcart\core\models\Order $order
      */
     protected $order;
 
     /**
-     * Constructor
-     * @param ModuleModel $module
      * @param OrderModel $order
      */
-    public function __construct(ModuleModel $module, OrderModel $order)
+    public function __construct(OrderModel $order)
     {
         parent::__construct();
 
         $this->order = $order;
-        $this->module = $module;
     }
 
     /**
@@ -53,7 +43,7 @@ class Settings extends BackendController
         $this->setBreadcrumbEditSettings();
 
         $this->setData('statuses', $this->order->getStatuses());
-        $this->setData('settings', $this->config->getFromModule('authorize'));
+        $this->setData('settings', $this->module->getSettings('authorize'));
 
         $this->submitSettings();
         $this->outputEditSettings();
