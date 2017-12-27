@@ -9,13 +9,13 @@
 
 namespace gplcart\modules\authorize;
 
-use gplcart\core\Module,
-    gplcart\core\Container;
+use gplcart\core\Container,
+    gplcart\core\Module as CoreModule;
 
 /**
  * Main class for Authorize.Net module
  */
-class Authorize
+class Module
 {
 
     /**
@@ -49,9 +49,9 @@ class Authorize
     protected $module;
 
     /**
-     * @param Module $module
+     * @param CoreModule $module
      */
-    public function __construct(Module $module)
+    public function __construct(CoreModule $module)
     {
         $this->module = $module;
     }
@@ -97,24 +97,6 @@ class Authorize
     }
 
     /**
-     * Get gateway instance
-     * @return object
-     * @throws \InvalidArgumentException
-     */
-    protected function getGateway()
-    {
-        /* @var $module \gplcart\modules\omnipay_library\OmnipayLibrary */
-        $module = Container::get('gplcart\\modules\\omnipay_library\\OmnipayLibrary');
-        $gateway = $module->getGatewayInstance('AuthorizeNet_SIM');
-
-        if (!$gateway instanceof \Omnipay\AuthorizeNet\SIMGateway) {
-            throw new \InvalidArgumentException('Object is not instance of Omnipay\AuthorizeNet\SIMGateway');
-        }
-
-        return $gateway;
-    }
-
-    /**
      * Implements hook "payment.methods"
      * @param array $methods
      */
@@ -127,26 +109,6 @@ class Authorize
             'title' => 'Authorize.Net',
             'template' => array('complete' => 'pay')
         );
-    }
-
-    /**
-     * Returns the current status for the payment method
-     * @return bool
-     */
-    protected function getStatus()
-    {
-        return $this->getSetting('status') && $this->getSetting('apiLoginId') && $this->getSetting('hashSecret') && $this->getSetting('transactionKey');
-    }
-
-    /**
-     * Returns a module setting
-     * @param string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    protected function getSetting($name, $default = null)
-    {
-        return $this->module->getSettings('authorize', $name, $default);
     }
 
     /**
@@ -191,6 +153,24 @@ class Authorize
 
             $this->processPurchase();
         }
+    }
+
+    /**
+     * Get gateway instance
+     * @return object
+     * @throws \InvalidArgumentException
+     */
+    protected function getGateway()
+    {
+        /* @var $module \gplcart\modules\omnipay_library\Module */
+        $module = Container::get('gplcart\\modules\\omnipay_library\\OmnipayLibrary');
+        $gateway = $module->getGatewayInstance('AuthorizeNet_SIM');
+
+        if (!$gateway instanceof \Omnipay\AuthorizeNet\SIMGateway) {
+            throw new \InvalidArgumentException('Object is not instance of Omnipay\AuthorizeNet\SIMGateway');
+        }
+
+        return $gateway;
     }
 
     /**
@@ -322,6 +302,27 @@ class Authorize
         );
 
         return $model->add($transaction);
+    }
+
+    /**
+     * Returns the current status for the payment method
+     * @return bool
+     */
+    protected function getStatus()
+    {
+        return $this->getSetting('status') && $this->getSetting('apiLoginId')//
+                && $this->getSetting('hashSecret') && $this->getSetting('transactionKey');
+    }
+
+    /**
+     * Returns a module setting
+     * @param string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    protected function getSetting($name, $default = null)
+    {
+        return $this->module->getSettings('authorize', $name, $default);
     }
 
 }
