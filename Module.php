@@ -9,8 +9,10 @@
 
 namespace gplcart\modules\authorize;
 
+use Exception;
 use gplcart\core\Container,
     gplcart\core\Module as CoreModule;
+use gplcart\core\exceptions\Dependency as DependencyException;
 
 /**
  * Main class for Authorize.Net module
@@ -78,7 +80,7 @@ class Module
     {
         try {
             $this->getGateway();
-        } catch (\InvalidArgumentException $ex) {
+        } catch (Exception $ex) {
             $result = $ex->getMessage();
         }
     }
@@ -91,7 +93,7 @@ class Module
     {
         try {
             $this->getGateway();
-        } catch (\InvalidArgumentException $ex) {
+        } catch (Exception $ex) {
             $result = $ex->getMessage();
         }
     }
@@ -158,7 +160,7 @@ class Module
     /**
      * Get gateway instance
      * @return object
-     * @throws \InvalidArgumentException
+     * @throws DependencyException
      */
     protected function getGateway()
     {
@@ -166,11 +168,11 @@ class Module
         $module = Container::get('gplcart\\modules\\omnipay_library\\OmnipayLibrary');
         $gateway = $module->getGatewayInstance('AuthorizeNet_SIM');
 
-        if (!$gateway instanceof \Omnipay\AuthorizeNet\SIMGateway) {
-            throw new \InvalidArgumentException('Object is not instance of Omnipay\AuthorizeNet\SIMGateway');
+        if ($gateway instanceof \Omnipay\AuthorizeNet\SIMGateway) {
+            return $gateway;
         }
 
-        return $gateway;
+        throw new DependencyException('Gateway must be instance of Omnipay\AuthorizeNet\SIMGateway');
     }
 
     /**
@@ -229,11 +231,13 @@ class Module
      */
     protected function getPurchaseParams()
     {
+        $url = "checkout/complete/{$this->data_order['order_id']}";
+
         return array(
             'currency' => $this->data_order['currency'],
             'amount' => $this->data_order['total_formatted_number'],
-            'cancelUrl' => $this->controller->url("checkout/complete/{$this->data_order['order_id']}", array('authorize_return' => true, 'cancel' => true), true),
-            'returnUrl' => $this->controller->url("checkout/complete/{$this->data_order['order_id']}", array('authorize_return' => true), true)
+            'returnUrl' => $this->controller->url($url, array('authorize_return' => true), true),
+            'cancelUrl' => $this->controller->url($url, array('authorize_return' => true, 'cancel' => true), true)
         );
     }
 
