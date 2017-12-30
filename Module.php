@@ -165,7 +165,7 @@ class Module
     protected function getGateway()
     {
         /* @var $module \gplcart\modules\omnipay_library\Module */
-        $module = Container::get('gplcart\\modules\\omnipay_library\\OmnipayLibrary');
+        $module = $this->module->getInstance('omnipay_library');
         $gateway = $module->getGatewayInstance('AuthorizeNet_SIM');
 
         if ($gateway instanceof \Omnipay\AuthorizeNet\SIMGateway) {
