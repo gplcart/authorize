@@ -116,14 +116,14 @@ class Module
     /**
      * Implements hook "order.add.before"
      * @param array $order
-     * @param \gplcart\core\models\Order $model
+     * @param \gplcart\core\models\Order $order_model
      */
-    public function hookOrderAddBefore(array &$order, $model)
+    public function hookOrderAddBefore(array &$order, $order_model)
     {
         // Adjust order status before creation
         // We want to get payment in advance, so assign "awaiting payment" status
         if ($order['payment'] === 'authorize_sim') {
-            $order['status'] = $model->getStatusAwaitingPayment();
+            $order['status'] = $order_model->getStatusAwaitingPayment();
         }
     }
 
@@ -142,15 +142,15 @@ class Module
     /**
      * Implements hook "order.complete.page"
      * @param array $order
-     * @param \gplcart\core\models\Order $model
+     * @param \gplcart\core\models\Order $order_model
      * @param \gplcart\core\controllers\frontend\Controller $controller
      */
-    public function hookOrderCompletePage(array $order, $model, $controller)
+    public function hookOrderCompletePage(array $order, $order_model, $controller)
     {
         if ($order['payment'] === 'authorize_sim') {
 
-            $this->order = $model;
             $this->data_order = $order;
+            $this->order = $order_model;
             $this->controller = $controller;
 
             $this->processPurchase();
@@ -159,7 +159,7 @@ class Module
 
     /**
      * Get gateway instance
-     * @return object
+     * @return \Omnipay\AuthorizeNet\SIMGateway
      * @throws DependencyException
      */
     protected function getGateway()
