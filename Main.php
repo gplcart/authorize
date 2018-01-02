@@ -10,14 +10,14 @@
 namespace gplcart\modules\authorize;
 
 use Exception;
-use gplcart\core\Container,
-    gplcart\core\Module as CoreModule;
+use gplcart\core\Module,
+    gplcart\core\Container;
 use gplcart\core\exceptions\Dependency as DependencyException;
 
 /**
  * Main class for Authorize.Net module
  */
-class Module
+class Main
 {
 
     /**
@@ -51,9 +51,9 @@ class Module
     protected $module;
 
     /**
-     * @param CoreModule $module
+     * @param Module $module
      */
-    public function __construct(CoreModule $module)
+    public function __construct(Module $module)
     {
         $this->module = $module;
     }
@@ -164,7 +164,7 @@ class Module
      */
     protected function getGateway()
     {
-        /* @var $module \gplcart\modules\omnipay_library\Module */
+        /* @var $module \gplcart\modules\omnipay_library\Main */
         $module = $this->module->getInstance('omnipay_library');
         $gateway = $module->getGatewayInstance('AuthorizeNet_SIM');
 
