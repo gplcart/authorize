@@ -294,8 +294,6 @@ class Main
      */
     protected function addTransaction()
     {
-        /* @var $model \gplcart\core\models\Transaction */
-        $model = Container::get('gplcart\\core\\models\\Transaction');
 
         $transaction = array(
             'total' => $this->data_order['total'],
@@ -304,7 +302,9 @@ class Main
             'payment_method' => $this->data_order['payment'],
             'gateway_transaction_id' => $this->response->getTransactionReference()
         );
-
+        
+        /* @var $model \gplcart\core\models\Transaction */
+        $model = gplcart_instance_model('Transaction');
         return $model->add($transaction);
     }
 
