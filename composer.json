@@ -1,23 +1,30 @@
 {
-    "name": "gplcart/authorize",
-    "type": "gplcart-module",
-    "description": "Authorize.Net payment gateway for GPL Cart",
-    "keywords": ["gplcart", "ecommerce", "shopping cart", "gplcart-module", "omnipay", "gplcart-payment-module"],
-    "homepage": "https://github.com/gplcart/authorize",
-    "license": "GPL-3.0",
-    "authors": [
-        {
-            "name": "Iurii Makukh",
-            "email": "gplcart.software@gmail.com",
-            "role": "lead"
-        }
-    ],
-    "support": {
-        "issues": "https://github.com/gplcart/authorize/issues"
-    },
-    "require": {
-        "gplcart/composer-module-installer": "*"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+  "name": "gplcart/authorize",
+  "type": "gplcart-module",
+  "description": "Authorize.Net payment gateway for GPL Cart",
+  "keywords": [
+    "gplcart",
+    "ecommerce",
+    "shopping cart",
+    "gplcart-module",
+    "omnipay",
+    "gplcart-payment-module"
+  ],
+  "homepage": "https://github.com/gplcart/authorize",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Iurii Makukh",
+      "email": "gplcart.software@gmail.com",
+      "role": "lead"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/gplcart/authorize/issues"
+  },
+  "require": {
+    "gplcart/composer-module-installer": "*"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
