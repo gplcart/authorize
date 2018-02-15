@@ -10,9 +10,9 @@
 namespace gplcart\modules\authorize;
 
 use Exception;
-use gplcart\core\Module,
-    gplcart\core\Container;
-use gplcart\core\exceptions\Dependency as DependencyException;
+use gplcart\core\Module;
+use Omnipay\AuthorizeNet\SIMGateway;
+use UnexpectedValueException;
 
 /**
  * Main class for Authorize.Net module
@@ -160,7 +160,7 @@ class Main
     /**
      * Get gateway instance
      * @return \Omnipay\AuthorizeNet\SIMGateway
-     * @throws DependencyException
+     * @throws UnexpectedValueException
      */
     protected function getGateway()
     {
@@ -168,11 +168,11 @@ class Main
         $module = $this->module->getInstance('omnipay_library');
         $gateway = $module->getGatewayInstance('AuthorizeNet_SIM');
 
-        if ($gateway instanceof \Omnipay\AuthorizeNet\SIMGateway) {
-            return $gateway;
+        if (!$gateway instanceof SIMGateway) {
+            throw new UnexpectedValueException('Gateway must be instance of Omnipay\AuthorizeNet\SIMGateway');
         }
 
-        throw new DependencyException('Gateway must be instance of Omnipay\AuthorizeNet\SIMGateway');
+        return $gateway;
     }
 
     /**
@@ -302,7 +302,7 @@ class Main
             'payment_method' => $this->data_order['payment'],
             'gateway_transaction_id' => $this->response->getTransactionReference()
         );
-        
+
         /* @var $model \gplcart\core\models\Transaction */
         $model = gplcart_instance_model('Transaction');
         return $model->add($transaction);
@@ -315,7 +315,7 @@ class Main
     protected function getStatus()
     {
         return $this->getSetting('status') && $this->getSetting('apiLoginId')//
-                && $this->getSetting('hashSecret') && $this->getSetting('transactionKey');
+            && $this->getSetting('hashSecret') && $this->getSetting('transactionKey');
     }
 
     /**
