@@ -9,13 +9,13 @@
 
 namespace gplcart\modules\authorize\controllers;
 
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\controllers\backend\Controller;
+use gplcart\core\models\Order;
 
 /**
  * Handles incoming requests and outputs data related to Authorize.Net module
  */
-class Settings extends BackendController
+class Settings extends Controller
 {
 
     /**
@@ -25,9 +25,9 @@ class Settings extends BackendController
     protected $order;
 
     /**
-     * @param OrderModel $order
+     * @param Order $order
      */
-    public function __construct(OrderModel $order)
+    public function __construct(Order $order)
     {
         parent::__construct();
 
@@ -77,6 +77,7 @@ class Settings extends BackendController
     {
         $this->setSubmitted('settings');
         $this->setSubmittedBool('status');
+
         return !$this->hasErrors('settings');
     }
 
@@ -85,8 +86,7 @@ class Settings extends BackendController
      */
     protected function setTitleEditSettings()
     {
-        $vars = array('%name' => $this->text('Authorize'));
-        $title = $this->text('Edit %name settings', $vars);
+        $title = $this->text('Edit %name settings', array('%name' => $this->text('Authorize')));
         $this->setTitle($title);
     }
 

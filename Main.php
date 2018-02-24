@@ -314,8 +314,10 @@ class Main
      */
     protected function getStatus()
     {
-        return $this->getSetting('status') && $this->getSetting('apiLoginId')//
-            && $this->getSetting('hashSecret') && $this->getSetting('transactionKey');
+        return $this->getSetting('status')
+            && $this->getSetting('apiLoginId')
+            && $this->getSetting('hashSecret')
+            && $this->getSetting('transactionKey');
     }
 
     /**
