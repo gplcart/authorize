@@ -166,6 +166,8 @@ class Main
     {
         /* @var $module \gplcart\modules\omnipay_library\Main */
         $module = $this->module->getInstance('omnipay_library');
+
+        /** @var \Omnipay\AuthorizeNet\SIMGateway $gateway */
         $gateway = $module->getGatewayInstance('AuthorizeNet_SIM');
 
         if (!$gateway instanceof SIMGateway) {
